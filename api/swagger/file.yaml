@@ -130,6 +130,7 @@ definitions:
       slot_id:
         type: string
         description: 'Идентификатор слота'
+        enum: ["1", "2", "3", "4"]
         example: "Заказ №123"
         x-omitempty: false
         x-nullable: false

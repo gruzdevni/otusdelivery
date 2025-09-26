@@ -48,7 +48,7 @@ func (s *service) CheckOrderDelivery(ctx context.Context, orderID string) (*mode
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &models.DeliveryStatus{
-				OrderID:        res.OrderID,
+				OrderID:        orderID,
 				DeliveryStatus: "cancelled",
 			}, nil
 		}
@@ -78,11 +78,11 @@ func (s *service) ReserveSlotForOrder(ctx context.Context, arg query.ReserveSlot
 	}()
 
 	res2, err := s.repo.WithTx(tx).GetAvailableSlot(ctx, arg.SlotID)
-	if err != nil {
-		return fmt.Errorf("getting available slots after reserving: %w", err)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return fmt.Errorf("getting available slots: %w", err)
 	}
 
-	if res2 < 0 {
+	if res2 <= 0 || errors.Is(err, sql.ErrNoRows) {
 		return ErrNoAvailableSlots
 	}
 

@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -27,6 +28,7 @@ type NewSlotReserveParams struct {
 	// Идентификатор слота
 	// Example: Заказ №123
 	// Required: true
+	// Enum: [1 2 3 4]
 	SlotID string `json:"slot_id"`
 }
 
@@ -57,9 +59,49 @@ func (m *NewSlotReserveParams) validateOrderID(formats strfmt.Registry) error {
 	return nil
 }
 
+var newSlotReserveParamsTypeSlotIDPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["1","2","3","4"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		newSlotReserveParamsTypeSlotIDPropEnum = append(newSlotReserveParamsTypeSlotIDPropEnum, v)
+	}
+}
+
+const (
+
+	// NewSlotReserveParamsSlotIDNr1 captures enum value "1"
+	NewSlotReserveParamsSlotIDNr1 string = "1"
+
+	// NewSlotReserveParamsSlotIDNr2 captures enum value "2"
+	NewSlotReserveParamsSlotIDNr2 string = "2"
+
+	// NewSlotReserveParamsSlotIDNr3 captures enum value "3"
+	NewSlotReserveParamsSlotIDNr3 string = "3"
+
+	// NewSlotReserveParamsSlotIDNr4 captures enum value "4"
+	NewSlotReserveParamsSlotIDNr4 string = "4"
+)
+
+// prop value enum
+func (m *NewSlotReserveParams) validateSlotIDEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, newSlotReserveParamsTypeSlotIDPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *NewSlotReserveParams) validateSlotID(formats strfmt.Registry) error {
 
 	if err := validate.RequiredString("slot_id", "body", m.SlotID); err != nil {
+		return err
+	}
+
+	// value enum
+	if err := m.validateSlotIDEnum("slot_id", "body", m.SlotID); err != nil {
 		return err
 	}
 

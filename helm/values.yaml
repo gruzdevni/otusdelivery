@@ -8,12 +8,12 @@ migratePostgres:
   migratePostgres:
     image:
       repository: nikolaygr/otusdelivery
-      tag: v0.1
+      tag: v0.2
 deliveryDp:
   deliveryApp:
     image:
       repository: nikolaygr/otusdelivery
-      tag: v0.1
+      tag: v0.2
   replicas: 1
   strategy:
     rollingUpdate:

@@ -27,3 +27,5 @@ COMMENT ON COLUMN available_slots.available_quantity IS 'Количество с
 COMMENT ON COLUMN slot_reservations.id IS 'id строки';
 COMMENT ON COLUMN slot_reservations.order_id IS 'идентификатор заказа';
 COMMENT ON COLUMN slot_reservations.slot_id IS 'идентификатор диапазона';
+
+CREATE UNIQUE INDEX idx_order_id_slot_reservations ON slot_reservations (order_id);
