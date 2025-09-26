@@ -1,22 +1,26 @@
 CREATE TABLE delivery_time_slots(
     id SERIAL PRIMARY KEY,
-    time_slot string NOT NULL
+    time_slot VARCHAR(5) NOT NULL
 );
 
 INSERT INTO delivery_time_slots (time_slot)
-VALUES ("09-12"),
-    ("12-15"),
-    ("15-18"),
-    ("18-21");
+VALUES ('09-12'),
+    ('12-15'),
+    ('15-18'),
+    ('18-21');
     
 CREATE TABLE available_slots(
     id int PRIMARY KEY,
     available_quantity int NOT NULL
 );
 
+INSERT INTO available_slots (id, available_quantity)
+VALUES (1, 10),
+    (2, 5);
+
 CREATE TABLE slot_reservations(
     id SERIAL PRIMARY KEY,
-    order_id string NOT NULL,
+    order_id TEXT NOT NULL,
     slot_id int NOT NULL
 );
 
