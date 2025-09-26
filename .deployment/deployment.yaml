@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: delivery-dp
+  labels:
+    app: delivery-dp
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      env: v1
+  template:
+    metadata:
+      labels:
+        env: v1
+    spec:
+      containers:
+      - name: delivery-app
+        image: nikolaygr/otusdelivery:v0.1
+        envFrom:
+         - configMapRef:
+            name: conf-map
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: delivery-postgresql               
+              key: postgres-password
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 3

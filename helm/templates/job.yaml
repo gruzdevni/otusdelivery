@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "helm.fullname" . }}-migrate-postgres
+  labels:
+  {{- include "helm.labels" . | nindent 4 }}
+spec:
+  backoffLimit: {{ .Values.migratePostgres.backoffLimit }}
+  template:
+    spec:
+      containers:
+      - command:
+        - /otusdelivery
+        - postgres
+        - up
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres-password
+              name: {{ include "helm.fullname" . }}-postgresql
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "helm.fullname" . }}-conf-map
+        image: {{ .Values.migratePostgres.migratePostgres.image.repository }}:{{
+          .Values.migratePostgres.migratePostgres.image.tag | default .Chart.AppVersion
+          }}
+        name: migrate-postgres
+        resources: {}
+      restartPolicy: Never

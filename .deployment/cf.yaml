@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conf-map
+data:
+  POSTGRES_HOST: delivery-psql-1-postgresql.delivery.svc.cluster.local
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB_NAME: postgres
+  POSTGRES_USER: postgres

@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: delivery-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: delivery.internal
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: delivery-service-lb
+            port:
+              number: 80

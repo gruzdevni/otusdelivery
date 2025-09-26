@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helm.fullname" . }}-service-lb
+  labels:
+    app: service-lb
+  {{- include "helm.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.deliveryServiceLb.type }}
+  selector:
+    env: v1
+    {{- include "helm.selectorLabels" . | nindent 4 }}
+  ports:
+  {{- .Values.deliveryServiceLb.ports | toYaml | nindent 2 }}

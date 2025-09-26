@@ -1,0 +1,12 @@
+version: "2"
+sql:
+  - schema: "internal/migration/postgres"
+    queries:
+      - "internal/repo/slots.sql"
+    engine: "postgresql"
+    gen:
+      go:
+        package: "query"
+        out: "internal/repo"
+        emit_prepared_queries: true
+        omit_unused_structs: true

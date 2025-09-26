@@ -1,0 +1,183 @@
+swagger: "2.0"
+info:
+  title: Сервис otusdelivery
+  version: 1.0.0
+  description: API сервиса otusdelivery
+
+schemes:
+  - http
+  - https
+
+basePath: /api
+
+tags:
+  - name: Delivery
+    description: Сервис доставки 
+
+paths:
+  /check-delivery-status/{order-id}:
+    get:
+      summary: Получение статуса доставки по заказу
+      tags:
+        - Delivery
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: order-id
+          description: идентификатор заказа
+          required: true
+          type: string
+          x-omitempty: false
+          x-nullable: false
+      responses:
+        500:
+          description: Серверная ошибка
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: Клиентская ошибка
+          schema:
+            $ref: '#/definitions/Error'
+        200:
+          description: Успешное получение данных по балансу
+          schema:
+            $ref: '#/definitions/DeliveryStatus'
+  /reserve-slot:
+    post:
+      summary: Резервирование доставки по заказу
+      tags:
+        - Delivery
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: request
+          description: Параметры пополнения баланса
+          required: true
+          schema:
+            $ref: '#/definitions/NewSlotReserveParams'
+      responses:
+        500:
+          description: Серверная ошибка
+          schema:
+            $ref: '#/definitions/DefaultStatusResponse'
+        400:
+          description: Клиентская ошибка
+          schema:
+            $ref: '#/definitions/DefaultStatusResponse'
+        200:
+          description: Успешное создание пользователя
+          schema:
+            $ref: '#/definitions/DefaultStatusResponse'
+  /unreserve-slot/{order-id}:
+    delete:
+      tags:
+        - Delivery
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: order-id
+          description: идентификатор заказа
+          required: true
+          type: string
+          x-omitempty: false
+          x-nullable: false
+      responses:
+        500:
+          description: Серверная ошибка
+          schema:
+            $ref: '#/definitions/DefaultStatusResponse'
+        200:
+          description: Успешное получение данных по балансу
+          schema:
+            $ref: '#/definitions/DefaultStatusResponse'
+  /health:
+    get:
+      summary: Пинг сервиса
+      tags:
+        - Other
+      responses:
+        '200':
+          description: Успех
+          schema:
+            $ref: '#/definitions/DefaultStatusResponse'
+        '500':
+          description: Серверная ошибка
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  NewSlotReserveParams:
+    type: object
+    description: Создание резерва на доставку по заказу
+    required:
+      - order_id
+      - slot_id
+    properties:
+      order_id:
+        type: string
+        description: 'Идентификатор заказа'
+        example: "Заказ №123"
+        x-omitempty: false
+        x-nullable: false
+      slot_id:
+        type: string
+        description: 'Идентификатор слота'
+        example: "Заказ №123"
+        x-omitempty: false
+        x-nullable: false
+  DeliveryStatus:
+        type: object
+        properties:
+          order_id:
+            type: string
+            description: 'Идентификатор заказа'
+            example: "Заказ №123"
+            x-omitempty: false
+            x-nullable: false
+          delivery_status:
+            type: string
+            description: 'Статус доставки'
+            example: "Confirmed"
+            x-omitempty: false
+            x-nullable: false
+  DefaultStatusResponse:
+    type: object
+    description: Дефолтный положительный ответ
+    required:
+      - message
+      - code
+    properties:
+      code:
+        type: string
+        description: 'Кодовое обозначение ответа'
+        example: "01"
+        x-omitempty: false
+        x-nullable: false
+      message:
+        type: string
+        description: 'Сообщение'
+        example: "Сообщение об успешном выполнении запроса"
+        x-omitempty: false
+        x-nullable: false
+  Error:
+    type: object
+    description: объект ошибки, обязательным является лишь поле сообщения, опционально присутствует код и ряд других полей
+    required:
+      - message
+    properties:
+      message:
+        type: string
+        description: текстовое описание ошибки
+        example: "произошла такая-то ошибка"
+      code:
+        type: integer
+        description: цифровой код ошибки
+        example: 123

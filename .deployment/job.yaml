@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name:  migrate-postgres
+spec:
+  template:
+    spec:
+      containers:
+      - name: migrate-postgres
+        image: nikolaygr/otusdelivery:v0.1
+        command: ["/otusdelivery", "postgres", "up"]
+        envFrom:
+         - configMapRef:
+            name: conf-map
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: delivery-postgresql
+              key: postgres-password
+      restartPolicy: Never   
+  backoffLimit: 4

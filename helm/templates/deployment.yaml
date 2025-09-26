@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm.fullname" . }}-dp
+  labels:
+    app: delivery-dp
+  {{- include "helm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.deliveryDp.replicas }}
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.deliveryDp.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.deliveryDp.strategy.rollingUpdate.maxUnavailable }}
+    type: {{ .Values.deliveryDp.strategy.type | quote }}
+  selector:
+    matchLabels:
+      env: v1
+    {{- include "helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        env: v1
+      {{- include "helm.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres-password
+              name: {{ include "helm.fullname" . }}-postgresql
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "helm.fullname" . }}-conf-map
+        image: {{ .Values.deliveryDp.deliveryApp.image.repository }}:{{ .Values.deliveryDp.deliveryApp.image.tag
+          | default .Chart.AppVersion }}
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 3
+        name: delivery-app
+        ports:
+        - containerPort: 8080
+        resources: {}
